@@ -1,5 +1,7 @@
 # SnakeGame
 
+![alt text](image.png)
+
 ## CLI
 
 g++ src/main.cpp src/Game/Game.cpp src/Renderer/Renderer.cpp -I. -o snake
