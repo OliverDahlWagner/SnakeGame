@@ -4,37 +4,45 @@
 #include "Game/Game.h"
 #include "Renderer/Renderer.h"
 #include "Point/Point.h"  
+#include <SFML/Graphics.hpp>
 
 int main() {
     srand(time(NULL));
     Game game;
-    Renderer::drawMap(game);
-
     bool isRunning = true;
-    while (isRunning) {
+    sf::RenderWindow window(sf::VideoMode({ 800, 600 }), "Snake Game");
+    Renderer::drawMap(window, game);
 
-        std::cout << "Enter command (w/a/s/d to move, q to quit): \n";
-        char input = _getch();
+    while (window.isOpen() && isRunning) {
+        while (auto event = window.pollEvent()) {
+            if (event->is<sf::Event::Closed>()) {
+                window.close();
+            }
 
-        Point head = game.getSnake()[0];
-        Game::MoveResult result = Game::CONTINUEGAME;
+            if (auto* keyEvent = event->getIf<sf::Event::KeyPressed>()) {
+                if (keyEvent->code == sf::Keyboard::Key::Escape) {
+                    isRunning = false;
+                    window.close();
+                }
 
-        switch (input) {
-        case 'w': result = game.moveSnake({ head.x - 1, head.y }); break;
-        case 'a': result = game.moveSnake({ head.x, head.y - 1 }); break;
-        case 's': result = game.moveSnake({ head.x + 1, head.y }); break;
-        case 'd': result = game.moveSnake({ head.x, head.y + 1 }); break;
-        case 'q': isRunning = false; break;
-        default: std::cout << "Invalid command!\n";
+                Point head = game.getSnake()[0];
+                Game::MoveResult result = Game::CONTINUEGAME;
+
+                switch (keyEvent->code) {
+                case sf::Keyboard::Key::W: result = game.moveSnake({ head.x - 1, head.y }); break;
+                case sf::Keyboard::Key::A: result = game.moveSnake({ head.x, head.y - 1 }); break;
+                case sf::Keyboard::Key::S: result = game.moveSnake({ head.x + 1, head.y }); break;
+                case sf::Keyboard::Key::D: result = game.moveSnake({ head.x, head.y + 1 }); break;
+
+                }
+
+                if (result == Game::GAMEOVER) {
+                    std::cout << "Game Over! Final Score: " << game.getSnake().size() - 3 << "\n";
+                    isRunning = false;
+                }
+            }
+            Renderer::drawMap(window, game);
         }
 
-        if (result == Game::GAMEOVER) {
-            std::cout << "Game Over! Final Score: " << game.getSnake().size() - 3 << "\n";
-            break;
-        }
-
-        Renderer::drawMap(game);
     }
-
-    return 0;
 }

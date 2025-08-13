@@ -1,4 +1,4 @@
-#include "Game/Game.h"
+#include "Game.h"
 #include "Point/Point.h"
 #include <iostream>
 
@@ -27,7 +27,7 @@ void Game::spawnFruit() {
 }
 
 Game::MoveResult Game::moveSnake(Point point) {
-    if (point.x <= 0 || point.x >= ROWS - 1 || point.y <= 0 || point.y >= COLS - 1) {
+    if (point.x < 0 || point.x >= ROWS || point.y < 0 || point.y >= COLS) {
         std::cout << "You hit a wall! Game over.\n";
         return GAMEOVER;
     }
